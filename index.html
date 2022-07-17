@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viz3D</title>
+    <link rel="stylesheet" href="stylin.css">
+    <script src="utils.js"></script>
+    <script src="libs/three.js"></script>
+    <script src="libs/dat.gui.js"></script>
+    <script src="libs/Stats.js"></script>
+    <script src="libs/OrbitControls.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.3.0/simplex-noise.min.js'></script>
+  </head>
+  <script id="vertex_shader" type="x-shader/x-vertex">
+    uniform float u_time;
+    uniform float u_amplitude;
+    uniform float[64] u_data_arr;
+
+    void main() {
+      float x = abs(position.x);
+      float y = abs(position.y);
+      float floor_x = round(x);
+      float floor_y = round(y);
+      float x_multiplier = (32.0 - x) / 8.0;
+      float y_multiplier = (32.0 - y) / 8.0;
+      //float z = sin(abs(position.x) + abs(position.y) + u_time);
+      float z = sin(u_data_arr[int(floor_x)] / 50.0 + u_data_arr[int(floor_y)] / 50.0) * u_amplitude;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position.x, position.y, z ,1.0);
+    }
+  </script>
+
+  <script id="fragment_shader" type="x-shader/x-fragment">
+    void main() {
+      gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+    }
+  </script>
+
+
+  <body>
+    <main>
+      <audio src="bcpl.wav">
+      </audio>
+      <button id="playbutton" data-playing="false" role="switch" aria-checked="false">
+        <span>Play/Pause</span>
+      </button>
+    </main>
+    <script src="viz.js"></script>
+  </body>
+
+</html>

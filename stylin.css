@@ -1,0 +1,10 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+
+#playbutton {
+  position: fixed;
+  left: 50%;
+}
