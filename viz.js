@@ -73,13 +73,11 @@ renderCalls.push(function(){
 });
 
 var datcontrols = {
-  Something : 0,
-  SomethingElse : 0.01,
+  Amplitude : 3,
 }
 
 var gui = new dat.GUI();
-gui.add(datcontrols, 'Something', 0, 10);
-gui.add(datcontrols, 'SomethingElse', 0.01, 1);
+gui.add(datcontrols, 'Amplitude', 0, 10);
 
 /* ////////////////////////////////////////////////////////////////////////// */
 
@@ -145,6 +143,7 @@ renderCalls.push(function(){
   if (audio_initialized) {
     audioAnalyser.getByteFrequencyData(FFTDataArray);
     uniforms.u_time.value += 0.05;
+    uniforms.u_amplitude.value = datcontrols.Amplitude;
     uniforms.u_data_arr.value = FFTDataArray;
   }
 });
