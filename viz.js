@@ -13,6 +13,7 @@ render();
 /*////////////////////////////////////////*/
 
 var scene = new THREE.Scene();
+var clock = new THREE.Clock();
 
 var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.set(30, 80, 70);
@@ -27,6 +28,8 @@ window.addEventListener( 'resize', function () {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize( window.innerWidth, window.innerHeight );
+  uniforms.u_resolution.value.x = renderer.domElement.width;
+  uniforms.u_resolution.value.y = renderer.domElement.height;
 }, false );
 
 document.body.appendChild( renderer.domElement);
@@ -37,16 +40,22 @@ renderCalls.push(renderScene);
 /* ////////////////////////////////////////////////////////////////////////// */
 
 var controls = new THREE.OrbitControls( camera, renderer.domElement );
-controls.enableZoom = false;
+controls.listenToKeyEvents( window ); // optional
+
+//controls.enableZoom = false;
 //controls.autoRotate = true;
-
-controls.rotateSpeed = 0.01;
-controls.zoomSpeed = 0.3;
-
-controls.enablePan = false;
+//
+//controls.rotateSpeed = 0.01;
+//controls.zoomSpeed = 0.3;
+//
+//controls.enablePan = false;
 
 controls.enableDamping = true;
-controls.dampingFactor = 0.1;
+controls.dampingFactor = 0.05;
+controls.screenSpacePanning = false;
+controls.minDistance = 100;
+controls.maxDistance = 500;
+controls.maxPolarAngle = Math.PI / 2;
 
 controls.update();
 
@@ -86,6 +95,14 @@ const uniforms = {
   u_time: {
     type: "f",
     value: 1.0,
+  },
+  u_resolution: {
+    type: "v2",
+    value: new THREE.Vector2(),
+  },
+  u_mouse: {
+    type: "v2",
+    value: new THREE.Vector2(),
   },
   u_amplitude: {
     type: "f",
@@ -140,10 +157,12 @@ function init_audio() {
 }
 
 renderCalls.push(function(){
+  uniforms.u_resolution.value.x = renderer.domElement.width;
+  uniforms.u_resolution.value.y = renderer.domElement.height;
+  uniforms.u_time.value += clock.getDelta();
+  uniforms.u_amplitude.value = datcontrols.Amplitude;
   if (audio_initialized) {
     audioAnalyser.getByteFrequencyData(FFTDataArray);
-    uniforms.u_time.value += 0.05;
-    uniforms.u_amplitude.value = datcontrols.Amplitude;
     uniforms.u_data_arr.value = FFTDataArray;
   }
 });
